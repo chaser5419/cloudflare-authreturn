@@ -1,0 +1,13 @@
+# Wrangler build artifacts
+.wrangler/
+
+# Node.js dependencies
+node_modules/
+
+# Local environment variables (if you ever use them)
+.env
+.env.*.local
+
+# OS/editor junk
+.DS_Store
+*.log

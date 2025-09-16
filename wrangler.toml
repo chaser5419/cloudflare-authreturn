@@ -1,0 +1,11 @@
+name = "authreturn-worker"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# keep workers.dev for quick testing
+workers_dev = false
+
+# Bind the private R2 bucket for flags 
+[[r2_buckets]]
+binding = "FLAG_BUCKET"
+bucket_name = "flags"
