@@ -2,10 +2,14 @@ name = "authreturn-worker"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
-# keep workers.dev for quick testing
 workers_dev = false
 
-# Bind the private R2 bucket for flags 
+# Define routes properly as an array of objects
+routes = [
+  { pattern = "tunnel.chaser5419.online/secure*", zone_name = "chaser5419.online" }
+]
+
+# Bind the private R2 bucket for country flag assets
 [[r2_buckets]]
 binding = "FLAG_BUCKET"
 bucket_name = "flags"
