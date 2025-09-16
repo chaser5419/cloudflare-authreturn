@@ -1,26 +1,97 @@
-## Authenticated User Information with Cloudflare Access
+# 🌐 Cloudflare Authenticated User Info & Flags
 
-This project demonstrates a simple Cloudflare Worker implemented in a **single JavaScript file** (`index.js`).  
-The Worker returns information about the authenticated user by reading special HTTP request headers injected by **Cloudflare Access** after successful authentication.
+This project demonstrates a **Cloudflare Worker** that displays authenticated user details and fetches country flag images from a private **R2 bucket**.
 
-### How It Works
-1. A user attempts to access the protected route (e.g. `/secure`).  
-2. Cloudflare Access enforces authentication with the configured Identity Provider (IdP).  
-3. Once the user is authenticated, Cloudflare forwards the request to the Worker and injects identity details into custom HTTP headers.  
-4. The Worker reads these headers and generates a response that shows:
-   - **Email address** of the authenticated user  
-   - **Authentication timestamp**  
-   - **Country** (derived from Cloudflare’s geolocation header `Cf-IPCountry`)  
+---
 
-### Example Headers Provided by Cloudflare Access
-- `Cf-Access-Authenticated-User-Email` → Authenticated user’s email  
-- `Cf-Access-Authenticated-User-Id` → Unique user ID  
-- `Cf-Access-Authenticated-User-Identity` → JSON object with extended identity details  
-- `Cf-IPCountry` → Country code of the request  
+## ✨ Key Features
 
-### Worker Responsibilities
-- Read the above headers from the incoming request.  
-- Return an HTML response showing the authenticated user’s information.  
-- Provide a link to `/secure/{COUNTRY}`, which fetches a corresponding flag asset from a private R2 bucket.  
+✅ Identity-aware access with Cloudflare Access
 
-This implementation highlights how **Cloudflare Access + Workers** can be combined to create identity-aware applications without directly exposing the origin server.
+✅ ISO 8601 timestamps in UTC
+
+✅ Country-aware output with R2-backed flag images
+
+✅ Graceful error handling for missing assets
+
+✅ Clean, extensible project structure
+
+---
+
+## 🚀 Features
+
+- 🔒 **Cloudflare Access Integration**: Secure `/secure` route with your identity provider.
+- 👤 **User Info Display**: Shows authenticated email, login timestamp (UTC, ISO 8601), and country code.
+- 🏳️‍🌈 **Flag Images from R2**: Fetches country flag images from a private R2 bucket. If missing, shows a fallback message.
+
+---
+
+## 🛠 How It Works
+
+1. User visits `/secure` (protected route).
+2. **Cloudflare Access** enforces authentication via your configured Identity Provider.
+3. After login, Cloudflare injects identity details into request headers.
+4. The Worker (`index.js`) reads these headers and returns an HTML page with:
+    - Authenticated email
+    - Authentication timestamp (UTC, ISO 8601)
+    - Country code and flag image from R2
+    - Fallback message if flag is missing
+
+---
+
+## 📁 Project Structure
+
+- `index.js` — Worker script for `/secure` and `/secure/{COUNTRY}`
+- `wrangler.toml` — Wrangler config binding the Worker to the R2 bucket `flags`
+
+Example R2 binding in `wrangler.toml`:
+
+```toml
+[[r2_buckets]]
+binding = "FLAG_BUCKET"
+bucket_name = "flags"
+```
+
+---
+
+## ⚡ Build & Deploy
+
+1. **Install Wrangler CLI**
+    ```bash
+    npm install -g wrangler
+    ```
+2. **Login to Cloudflare**
+    ```bash
+    wrangler login
+    ```
+3. **Deploy the Worker**
+    ```bash
+    wrangler deploy
+    ```
+4. **Protect `/secure` with Cloudflare Access**
+    - Configure in the Zero Trust dashboard
+
+---
+
+## 🖥️ Example Output
+
+After authenticating and visiting `/secure`, you'll see an HTML page like:
+
+```
+user@example.com authenticated at 2025-09-16 03:47:01 UTC from MY
+```
+
+Displayed in a formatted table:
+
+- **Email**
+- **UTC Timestamp**
+- **Clickable Country Code** (e.g., `MY`)
+- **Country Flag** (inline, from R2)
+
+If the flag image is missing in R2:
+
+```
+Flag for MY not found in R2 bucket.
+```
+
+---
